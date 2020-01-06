@@ -1,22 +1,29 @@
-import React from 'react';
-import Header from './components/Header'
-import Aside from './components/Aside'
-import SnippetPreview from './components/SnippetPreview'
-import './App.sass';
+import React from 'react'
+import { useSelector } from 'react-redux'
 
-const App = () => (
-    <div className="page">
-        <Aside />
-        <div className="wrapper">
-            <Header />
-            <main className="main">
-                <article className="article">
-                    <SnippetPreview />
-                </article>
+import Header from './Header'
+import Aside from './Aside/'
+import SnippetPreview from './SnippetPreview'
+import './App.sass'
 
-            </main>
+const App = () => {
+    const snippets = useSelector(state => state.snippets)
+    const snippetsList = snippets.map((snippet, index) => <SnippetPreview snippet={snippet} key={index} />)
+
+    return (
+        <div className="page">
+            <Aside />
+            <div className="wrapper">
+                <Header />
+                <main className="main">
+                    <article className="article">
+                        {snippetsList}
+                    </article>
+
+                </main>
+            </div>
         </div>
-    </div>
-)
+    )
+}
 
-export default App;
+export default App

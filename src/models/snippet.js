@@ -1,4 +1,6 @@
 const mongoose = require('mongoose')
+const { CATEGORIES } = require('../config')
+
 const snippetScheme = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     userFilename: {
@@ -7,14 +9,18 @@ const snippetScheme = new mongoose.Schema({
     },
     category: {
         type: String,
+        enum: CATEGORIES,
         required: true,
     },
-    date: {
-        type: String,
+    createdDate: {
+        type: Number,
         required: true,
-        // default: Date.now ?
     },
     description: {
+        type: String,
+        required: true
+    },
+    codePreview: {
         type: String,
         required: true
     },
@@ -22,7 +28,7 @@ const snippetScheme = new mongoose.Schema({
         type: String,
         required: true,
     },
-    file: {
+    filename: {
         type: String,
         required: true
     },

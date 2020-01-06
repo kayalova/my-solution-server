@@ -1,28 +1,42 @@
+const path = require('path')
+const mongoose = require('mongoose')
+const { ROOT } = require('../config')
+const Snippet = require('../models/snippet')
+
+const _id1 = new mongoose.Types.ObjectId()
+const userFilename1 = 'App.js'
+const filename1 = `${_id1}-${userFilename1}`
+
+const _id2 = new mongoose.Types.ObjectId()
+const userFilename2 = 'utils.py'
+const filename2 = `${_id2}-${userFilename2}`
 const data = [
     {
-        id: 1,
-        userFilename: 'App.js',
+        _id: _id1,
+        userFilename: userFilename1,
         category: 'frontend',
-        date: '12/06/2019',
-        description: `import React from 'react';
-        import Header from './components/Header'
-        import Aside from './components/Aside'
-        import SnippetPreview from './components/SnippetPreview'
-        import './App.sass';
+        description: 'React application main class',
+        createdDate: 100,
+        codePreview: `import React from 'react'
+        import { useSelector } from 'react-redux'
         
-        const App = () => (
-            <div className="page">
-                <Aside />
-                <div className="wrapper">`,
-        file: '1-App.js',
-        pathToFile: './files/1-App.js'
+        import Header from './Header'
+        import Aside from './Aside/'
+        import SnippetPreview from './SnippetPreview'
+        import './App.sass'
+        
+        const App = () => {
+            const snippets = useSelector(state => state.snippets)`,
+        filename: filename1,
+        pathToFile: path.join(ROOT, 'data', 'files', filename1)
     },
     {
-        id: 2,
-        userFilename: 'utils.py',
+        _id: _id2,
+        userFilename: userFilename2,
         category: 'backend',
-        date: '12/20/2019',
-        description: `class FileProxyMixin:
+        description: 'very usefull and meaningfull',
+        createdDate: 1578268245348,
+        codePreview: `class FileProxyMixin:
         """
         A mixin class used to forward file methods to an underlaying file
         object.  The internal file object has to be called "file"::
@@ -32,9 +46,14 @@ const data = [
         """
     
         encoding = property(lambda self: self.file.encoding)`,
-        file: '2-utils.py',
-        pathToFile: './files/2-utils.py',
+        filename: filename2,
+        pathToFile: path.join(ROOT, 'data', 'files', filename2)
     }
 ]
+
+
+/* --------- test initial data ---------- */
+// const first = new Snippet(data[0]).save()
+// const second = new Snippet(data[1]).save()
 
 module.exports = data
