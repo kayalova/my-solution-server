@@ -1,36 +1,20 @@
 const fs = require('fs')
+const path = require('path')
+const { ROOT } = require('../config')
 
-function filterSnippetsBySelectors(data, selectorsHash) {
-    const { startDate, endDate } = selectorsHash
 
-    return data.filter(snippet => {
-        let flag = false
-        const visited = []
-        for (const [field, snippetValue] of Object.entries(snippet)) {
-
-            if (field === 'date') {
-                flag = isDateBetween(snippetValue, startDate, endDate)
-                visited.push(flag)
-                continue
-            }
-            let selectorValue = selectorsHash[field]
-            if (selectorValue) {
-                flag = selectorValue === snippetValue
-                visited.push(flag)
-            }
-        }
-        return visited.every(bool => bool)
-    })
-}
-
-function isDateBetween(current, start, end) {
-    // format : MM/dd/yyyy
-    const currentDateArray = current.split('/') // [12, 06, 2019]
-    const from = start.split('/') // [12, 01, 2019]
-    const to = end.split('/') // [12, 15, 2019]
-
-    return currentDateArray.every((el, i) => el >= from[i] && elem <= to[i])
-
+function filterSnippets(model, { startDate, endDate, ...restOptions }) {
+    const pattern = restOptions.description ? restOptions.description : '.*';
+    return model.find({
+        ...restOptions,
+        createdDate: { $gte: startDate, $lte: endDate },
+        description: { $regex: new RegExp(pattern, 'i') }
+    },
+        (err, snippets) => {
+            if (err)
+                console.log(err)
+            return snippets
+        })
 }
 
 function buildCodePreview(code) {
@@ -43,25 +27,30 @@ function buildCodePreview(code) {
     return preiewArray.join('\n')
 }
 
-function formatDate() {
-    const date = new Date()
-    const day = date.getDate()
-    const month = date.getMonth() + 1
-    const year = date.getFullYear()
-
-    return `${day}/${month}/${year}`
-}
-
 function buildFile(filename, content) {
-    const f = fs.writeFile(filename, content)
-    //
+    const filePath = getSnippetPath(filename)
+    fs.writeFile(filePath, content, 'utf8', (err) => {
+        if (err)
+            console.log(err)
+    })
 }
+
+function getSnippetPath(filename) {
+    return path.join(ROOT, 'data', 'files', filename)
+}
+
+function deleteFile(filepath) {
+    fs.unlink(filepath, (err) => {
+        if (err) console.log(err)
+    })
+}
+
 
 module.exports = {
-    filterSnippetsBySelectors,
-    isDateBetween,
+    filterSnippets,
     buildCodePreview,
-    formatDate,
-    buildFile
+    buildFile,
+    getSnippetPath,
+    deleteFile
 }
 
