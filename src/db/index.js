@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 mongoose.connect(
-  'mongodb://localhost:27017,localhost:27018/snippets?replicaSet=rs0',
+  'mongodb://localhost:27017/snippets',
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,

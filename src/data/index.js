@@ -1,7 +1,7 @@
 const path = require('path')
 const mongoose = require('mongoose')
 const { ROOT } = require('../config')
-const Snippet = require('../models/snippet')
+const Snippet = require('../db/models/snippet')
 
 const _id1 = new mongoose.Types.ObjectId()
 const userFilename1 = 'App.js'

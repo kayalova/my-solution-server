@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const { CATEGORIES } = require('../config')
+const { CATEGORIES } = require('../../config')
 
 const snippetScheme = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
