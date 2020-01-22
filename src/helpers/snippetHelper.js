@@ -46,9 +46,15 @@ const create = (originalFilename, category, description, code) => {
 }
 
 const remove = id => {
-    return Snippet.findByIdAndRemove({ _id: id }, (err, snippet) => {
-        if (err) console.log(err)
-        fileHelper.remove(snippet.pathToFile)
+    return new Promise((resolve, reject) => {
+        Snippet.findByIdAndRemove({ _id: id }, (err, snippet) => {
+            if (err || snippet == null) reject(err)
+            else {
+                fileHelper.remove(snippet.pathToFile)
+                    .then(() => resolve())
+                    .catch(err => reject(err))
+            }
+        })
     })
 }
 

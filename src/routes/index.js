@@ -3,12 +3,11 @@ const snippetHelper = require('../helpers/snippetHelper')
 const filterHelper = require('../helpers/filterHelper')
 const fileHelper = require('../helpers/fileHelper')
 
-
 router.get('/snippets', (req, res) => {
     const filter = filterHelper.prepareSnippet(req.query)
     snippetHelper.find(filter)
         .then((snippets) => res.send(snippets))
-        .catch(err => res.sendStatus(500))
+        .catch(err => res.sendStatus(500).json({ message: err.message }))
 })
 
 router.post('/snippets/create', (req, res) => {
@@ -26,7 +25,7 @@ router.post('/snippets/create', (req, res) => {
 router.delete('/snippets/:id', (req, res) => {
     snippetHelper.remove(req.params.id)
         .then(() => res.sendStatus(200))
-        .catch(err => res.sendStatus(500))
+        .catch(err => res.sendStatus(500).json({ message: err.message }))
 })
 
 module.exports = router

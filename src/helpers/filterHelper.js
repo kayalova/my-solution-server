@@ -21,6 +21,7 @@ const datesFilter = filters => {
 }
 
 //куда деть поля
+// подумай тоже над названием метода (forSnippet, ...), прям режет глаз
 const prepareSnippet = queries => {
     const snippetFilters = ["startDate", "endDate", "category", "filename", "description"]
 
