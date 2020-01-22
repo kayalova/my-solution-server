@@ -1,65 +1,34 @@
 const router = require('express').Router()
-const mongoose = require('mongoose')
-const Snippet = require('../models/snippet')
-const {
-    filterSnippets,
-    buildCodePreview,
-    getSnippetPath,
-    buildFile,
-    deleteFile } = require('../helpers')
+const snippetHelper = require('../helpers/snippetHelper')
+const filterHelper = require('../helpers/filterHelper')
+const Snippet = require('../db/models/snippet')
 
 
-router.get('/snippets/search', async (req, res) => {
-    const { filename: userFilename, ...filters } = req.query
-    const selectors = {}
-    for (let [field, value] of Object.entries({ userFilename, ...filters })) {
-        if (value)
-            selectors[field] = value
-    }
+router.get('/snippets', async (req, res) => {
+    const filter = filterHelper.prepareSnippet(req.query)
+    snippetHelper.find(filter)
+        .then((snippets) => res.send(snippets))
+        .catch(err => res.sendStatus(500))
 
-    const snippets = await filterSnippets(Snippet, selectors)
-    res.send(JSON.stringify(snippets))
 })
 
 router.post('/snippets/create', async (req, res) => {
-    console.log(req.body)
-    const { filename: userFilename, category, code, description } = req.body
-    const codePreview = buildCodePreview(code)
-    const createdDate = new Date().getTime()
-    const _id = new mongoose.Types.ObjectId()
-    const filename = `${_id}-${userFilename}`
-    buildFile(filename, code)
-
-    const snippet = new Snippet({
-        _id,
-        filename,
-        pathToFile: getSnippetPath(filename),
-        userFilename,
-        description,
-        codePreview,
-        category,
-        createdDate,
-    })
+    const { userFilename, category, code, description } = req.body
+    const snippet = await snippetHelper.create(userFilename, category, description, code)
     try {
         await snippet.save()
-        Snippet.find({}).sort({ createdDate: 'desc' }).exec(function (err, snippets) {
-            if (err) console.log(err)
-            res.status(201).send(snippets)
-        });
-    } catch (err) {
+        const snippets = await Snippet.find({}).sort({ createdDate: -1 })
+        res.status(201).send(snippets)
+    }
+    catch (err) {
         res.status(400).json({ message: err.message })
     }
 })
 
-
 router.delete('/snippets/:id', (req, res) => {
-    Snippet.findByIdAndRemove({ _id: req.params.id }, (err, snippet) => {
-        if (err) console.log(err)
-        deleteFile(snippet.pathToFile)
-        res.status(200)
-    })
-    console.log(req.params.id)
+    snippetHelper.remove(req.params.id)
+        .then(() => res.sendStatus(200))
+        .catch(err => res.sendStatus(500))
 })
-
 
 module.exports = router
