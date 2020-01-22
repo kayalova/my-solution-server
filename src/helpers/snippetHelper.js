@@ -33,20 +33,16 @@ const create = (originalFilename, category, description, code) => {
     const codePreview = getCodePreview(code)
     const pathToFile = getPath(filename)
 
-    return fileHelper.write(pathToFile, code)
-        .then(() => {
-            return new Snippet({
-                _id,
-                filename,
-                pathToFile,
-                userFilename: originalFilename,
-                description,
-                codePreview,
-                category,
-                createdDate,
-            })
-        })
-        .catch(err => console.log(err))
+    return new Snippet({
+        _id,
+        filename,
+        pathToFile,
+        userFilename: originalFilename,
+        description,
+        codePreview,
+        category,
+        createdDate,
+    })
 }
 
 const remove = id => {
