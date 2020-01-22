@@ -1,9 +1,8 @@
 const path = require('path')
 const mongoose = require('mongoose')
 const { ROOT } = require('../config')
-const Snippet = require('../db/models/snippet')
+const Snippet = require('../models/db/snippet')
 const fileHelper = require('../helpers/fileHelper')
-
 
 const getPath = filename => path.join(ROOT, 'data', 'files', filename)
 

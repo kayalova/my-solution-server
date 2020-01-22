@@ -2,12 +2,13 @@ const router = require('express').Router()
 const snippetHelper = require('../helpers/snippetHelper')
 const filterHelper = require('../helpers/filterHelper')
 const fileHelper = require('../helpers/fileHelper')
+const errorHelper = require('../helpers/errorHelper')
 
 router.get('/snippets', (req, res) => {
     const filter = filterHelper.prepareSnippet(req.query)
     snippetHelper.find(filter)
         .then((snippets) => res.send(snippets))
-        .catch(err => res.sendStatus(500).json({ message: err.message }))
+        .catch(err => res.status(500).json(errorHelper.getErrorResponse(err.message)))
 })
 
 router.post('/snippets/create', (req, res) => {
@@ -19,13 +20,13 @@ router.post('/snippets/create', (req, res) => {
             await snippet.save()
             res.sendStatus(201)
         })
-        .catch(err => res.status(500).json({ message: err.message }))
+        .catch(err => res.status(500).json(errorHelper.getErrorResponse(err.message)))
 })
 
 router.delete('/snippets/:id', (req, res) => {
     snippetHelper.remove(req.params.id)
         .then(() => res.sendStatus(200))
-        .catch(err => res.sendStatus(500).json({ message: err.message }))
+        .catch(err => res.status(500).json(errorHelper.getErrorResponse(err.message)))
 })
 
 module.exports = router
