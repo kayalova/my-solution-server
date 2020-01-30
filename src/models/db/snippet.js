@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const { CATEGORIES } = require('../../config')
 
 const snippetScheme = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
@@ -8,11 +7,11 @@ const snippetScheme = new mongoose.Schema({
         required: true
     },
     category: {
-        type: String,
-        enum: CATEGORIES,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
         required: true,
     },
-    createdDate: {
+    createdAt: {
         type: Number,
         required: true,
     },
