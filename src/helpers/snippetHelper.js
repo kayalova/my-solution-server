@@ -1,10 +1,12 @@
 const path = require('path')
 const mongoose = require('mongoose')
-const { ROOT } = require('../config')
-const Snippet = require('../models/db/snippet')
+const Snippet = require('../models/db/Snippet')
 const fileHelper = require('../helpers/fileHelper')
+const categoryHelper = require('../helpers/categoryHelper')
+const { ERROR_MSG } = require('../constants')
 
-const getPath = filename => path.join(ROOT, 'data', 'files', filename)
+
+const getPath = filename => path.join(ROOT_PATH, 'data', 'files', filename)
 
 const getCodePreview = str => {
     let codePreviewStr = ''
@@ -25,48 +27,65 @@ const getCodePreview = str => {
     return codePreviewStr
 }
 
-const create = (originalFilename, category, description, code) => {
+// rename category -> categoryId ?
+const prepare = async (originalFilename, category, description, code) => {
     const _id = new mongoose.Types.ObjectId()
     const filename = `${_id}-${originalFilename}`
-    const createdDate = new Date().getTime()
+    const createdAt = new Date().getTime()
     const codePreview = getCodePreview(code)
     const pathToFile = getPath(filename)
+    const catId = await categoryHelper.getCategoryId(category)
 
     return new Snippet({
         _id,
         filename,
         pathToFile,
         userFilename: originalFilename,
+        category: catId,
         description,
         codePreview,
-        category,
-        createdDate,
+        createdAt,
     })
+
+
 }
 
-const remove = id => {
-    return new Promise((resolve, reject) => {
-        Snippet.findByIdAndRemove({ _id: id }, (err, snippet) => {
-            if (err || snippet == null) reject(err)
-            else {
-                fileHelper.remove(snippet.pathToFile)
-                    .then(() => resolve())
-                    .catch(err => reject(err))
-            }
-        })
-    })
+const create = async (snippet, code) => {
+    try {
+        await fileHelper.write(snippet.pathToFile, code)
+        await snippet.save()
+    }
+    catch (err) {
+        throw new Error(ERROR_MSG.SNIPPET.CREATE_FAILED)
+    }
 }
 
-const find = filterSnippet => {
-    return new Promise((resolve, reject) => {
-        Snippet.find(filterSnippet, (err, snippets) => {
-            if (err) reject(err)
-            else resolve(snippets)
-        })
-    })
+const remove = async _id => {
+    try {
+        const snippet = await Snippet.findByIdAndRemove({ _id })
+        await fileHelper.remove(snippet.pathToFile)
+    }
+    catch (err) {
+        throw new Error(ERROR_MSG.SNIPPET.REMOVE_FAILED)
+    }
+}
+
+
+const find = async filterSnippet => {
+    try {
+        const snippets = await Snippet
+            .find(filterSnippet).select('-pathToFile -filename -__v')
+            .populate('category', '-_id -__v')
+        return snippets
+
+    }
+    catch (err) {
+        throw new Error(ERROR_MSG.SNIPPET.FIND_FAILED)
+    }
 }
 
 const snippetHepler = {
+    prepare,
     create,
     find,
     remove

@@ -1,22 +1,23 @@
-const fs = require('fs')
+const fs = require('fs').promises
 
-const write = (path, content) => {
-    return new Promise((resolve, reject) => {
-        fs.writeFile(path, content, 'utf8', (err) => {
-            if (err) reject(err)
-            resolve('File successfully created')
-        })
-    })
+const write = async (path, content) => {
+    try {
+        await fs.writeFile(path, content, 'utf8')
+        return 'File successfully created'
+    }
+    catch (error) {
+        throw new Error(error)
+    }
 }
 
-const remove = path => {
-    return new Promise((resolve, reject) => {
-        fs.unlink(path, (err) => {
-            if (err) reject(err)
-            resolve('File successfully deleted')
-        })
-
-    })
+const remove = async path => {
+    try {
+        await fs.unlink(path)
+        return 'File successfully deleted'
+    }
+    catch (error) {
+        throw new Error(error)
+    }
 }
 
 const fileHelper = {

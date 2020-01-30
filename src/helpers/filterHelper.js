@@ -1,3 +1,5 @@
+const Category = require('../models/db/Category')
+
 const descriptionFilter = filters => {
     if (filters.description) {
         filters.description = { $regex: new RegExp(filters.description) }
@@ -8,13 +10,22 @@ const descriptionFilter = filters => {
 
 const datesFilter = filters => {
     if (filters.startDate) {
-        filters.createdDate = { $gte: filters.startDate }
+        filters.createdAt = { $gte: filters.startDate }
         delete filters.startDate
     }
 
     if (filters.endDate) {
-        filters.createdDate = { ...filters.createdDate, $lte: filters.endDate }
+        filters.createdAt = { ...filters.createdAt, $lte: filters.endDate }
         delete filters.endDate
+    }
+
+    return filters
+}
+
+const categoryFilter = async filters => {
+    if (filters.category) {
+        const [cat] = await Category.find({ id: filters.category })
+        filters.category = cat._id
     }
 
     return filters
@@ -22,8 +33,8 @@ const datesFilter = filters => {
 
 //куда деть поля
 // подумай тоже над названием метода (forSnippet, ...), прям режет глаз
-const prepareSnippet = queries => {
-    const snippetFilters = ["startDate", "endDate", "category", "filename", "description"]
+const prepareSnippet = async queries => {
+    const snippetFilters = ["startDate", "endDate", "category", "userFilename", "description"]
 
     const selectors = snippetFilters.reduce((selectors, filter) => {
         if (filter in queries) selectors[filter] = queries[filter]
@@ -32,6 +43,7 @@ const prepareSnippet = queries => {
 
     datesFilter(selectors)
     descriptionFilter(selectors)
+    await categoryFilter(selectors)
 
     return selectors
 }
