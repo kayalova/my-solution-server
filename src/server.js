@@ -4,7 +4,9 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const { db } = require('./db/index')
 const api = require('./routes')
-const { URL, PORT } = require('./config')
+require('dotenv').config()
+
+global.ROOT_PATH = __dirname
 
 app.use(cors())
 
@@ -28,7 +30,7 @@ app.use((req, res, next) => {
 app.use('/api', api)
 
 db.then(() => {
-    app.listen(PORT, URL, err => {
+    app.listen(process.env.PORT, process.env.SERVER_HOST, err => {
         if (err) {
             console.log('Error: ' + err)
             return
