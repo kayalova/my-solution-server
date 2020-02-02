@@ -1,4 +1,5 @@
 const Category = require('../models/db/Category')
+const { SNIPPET_FILTERS } = require('../constants')
 
 const descriptionFilter = filters => {
     if (filters.description) {
@@ -24,19 +25,15 @@ const datesFilter = filters => {
 
 const categoryFilter = async filters => {
     if (filters.category) {
-        const [cat] = await Category.find({ id: filters.category })
+        const [cat] = await Category.find({ _id: filters.category })
         filters.category = cat._id
     }
 
     return filters
 }
 
-//куда деть поля
-// подумай тоже над названием метода (forSnippet, ...), прям режет глаз
 const prepareSnippet = async queries => {
-    const snippetFilters = ["startDate", "endDate", "category", "userFilename", "description"]
-
-    const selectors = snippetFilters.reduce((selectors, filter) => {
+    const selectors = SNIPPET_FILTERS.reduce((selectors, filter) => {
         if (filter in queries) selectors[filter] = queries[filter]
         return selectors
     }, {})

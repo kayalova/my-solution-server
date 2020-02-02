@@ -9,11 +9,11 @@ const snippetScheme = new mongoose.Schema({
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
-        required: true,
+        required: true
     },
     createdAt: {
         type: Number,
-        required: true,
+        required: true
     },
     description: {
         type: String,
@@ -25,13 +25,12 @@ const snippetScheme = new mongoose.Schema({
     },
     pathToFile: {
         type: String,
-        required: true,
+        required: true
     },
     filename: {
         type: String,
         required: true
-    },
-
+    }
 })
 
 module.exports = mongoose.model('Snippet', snippetScheme)

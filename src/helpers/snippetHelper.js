@@ -5,91 +5,81 @@ const fileHelper = require('../helpers/fileHelper')
 const categoryHelper = require('../helpers/categoryHelper')
 const { ERROR_MSG } = require('../constants')
 
-
 const getPath = filename => path.join(ROOT_PATH, 'data', 'files', filename)
 
 const getCodePreview = str => {
-    let codePreviewStr = ''
-    let start = 0
-    let end = 0
-    let linesCount = 0
+  let codePreviewStr = ''
+  let start = 0
+  let end = 0
+  let linesCount = 0
 
+  end = str.indexOf('\n', start)
+  if (end === -1 && str.trim()) return str
+
+  while (end !== -1 && linesCount < 10) {
     end = str.indexOf('\n', start)
-    if (end === -1 && str.trim()) return str
-
-    while (end !== -1 && linesCount < 10) {
-        end = str.indexOf('\n', start)
-        line = str.slice(start, end)
-        codePreviewStr += `${line}\n`
-        start = end + 1
-        linesCount++
-    }
-    return codePreviewStr
+    line = str.slice(start, end)
+    codePreviewStr += `${line}\n`
+    start = end + 1
+    linesCount++
+  }
+  return codePreviewStr
 }
 
-// rename category -> categoryId ?
 const prepare = async (originalFilename, category, description, code) => {
-    const _id = new mongoose.Types.ObjectId()
-    const filename = `${_id}-${originalFilename}`
-    const createdAt = new Date().getTime()
-    const codePreview = getCodePreview(code)
-    const pathToFile = getPath(filename)
-    const catId = await categoryHelper.getCategoryId(category)
+  const _id = new mongoose.Types.ObjectId()
+  const filename = `${_id}-${originalFilename}`
+  const createdAt = new Date().getTime()
+  const codePreview = getCodePreview(code)
+  const pathToFile = getPath(filename)
+  const catId = await categoryHelper.getCategoryId(category)
 
-    return new Snippet({
-        _id,
-        filename,
-        pathToFile,
-        userFilename: originalFilename,
-        category: catId,
-        description,
-        codePreview,
-        createdAt,
-    })
-
-
+  return new Snippet({
+    _id,
+    filename,
+    pathToFile,
+    userFilename: originalFilename,
+    category: catId,
+    description,
+    codePreview,
+    createdAt
+  })
 }
 
 const create = async (snippet, code) => {
-    try {
-        await fileHelper.write(snippet.pathToFile, code)
-        await snippet.save()
-    }
-    catch (err) {
-        throw new Error(ERROR_MSG.SNIPPET.CREATE_FAILED)
-    }
+  try {
+    await fileHelper.write(snippet.pathToFile, code)
+    await snippet.save()
+  } catch (err) {
+    throw new Error(ERROR_MSG.SNIPPET.CREATE_FAILED)
+  }
 }
 
 const remove = async _id => {
-    try {
-        const snippet = await Snippet.findByIdAndRemove({ _id })
-        await fileHelper.remove(snippet.pathToFile)
-    }
-    catch (err) {
-        throw new Error(ERROR_MSG.SNIPPET.REMOVE_FAILED)
-    }
+  try {
+    const snippet = await Snippet.findByIdAndRemove({ _id })
+    await fileHelper.remove(snippet.pathToFile)
+  } catch (err) {
+    throw new Error(ERROR_MSG.SNIPPET.REMOVE_FAILED)
+  }
 }
 
-
 const find = async filterSnippet => {
-    try {
-        const snippets = await Snippet
-            .find(filterSnippet).select('-pathToFile -filename -__v')
-            .populate('category', '-_id -__v')
-        return snippets
-
-    }
-    catch (err) {
-        throw new Error(ERROR_MSG.SNIPPET.FIND_FAILED)
-    }
+  try {
+    const snippets = await Snippet.find(filterSnippet)
+      .select('-pathToFile -filename -__v')
+      .populate('category', '-_id -__v')
+    return snippets
+  } catch (err) {
+    throw new Error(ERROR_MSG.SNIPPET.FIND_FAILED)
+  }
 }
 
 const snippetHepler = {
-    prepare,
-    create,
-    find,
-    remove
+  prepare,
+  create,
+  find,
+  remove
 }
 
-
-module.exports = snippetHepler 
+module.exports = snippetHepler

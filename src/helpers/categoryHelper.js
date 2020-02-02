@@ -1,7 +1,7 @@
 const Category = require('../models/db/Category')
 
-const getCategoryId = async id => {
-    const [cat] = await Category.find({ id })
+const getCategoryId = async _id => {
+    const [cat] = await Category.find({ _id })
     return cat._id
 }
 
