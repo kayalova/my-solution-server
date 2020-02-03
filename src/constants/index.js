@@ -1,8 +1,8 @@
 const ERROR_MSG = {
   SNIPPET: {
-    CREATE_FAILED: 'Не удалось создать сниппет',
-    REMOVE_FAILED: 'Не удалось удалить сниппет',
-    FIND_FAILED: 'Не удалось найти сниппеты'
+    CREATE_FAILED: 'Unable to create snippet',
+    REMOVE_FAILED: 'Unable to delete snippet',
+    FIND_FAILED: 'Unable to find snippets'
   }
 }
 
