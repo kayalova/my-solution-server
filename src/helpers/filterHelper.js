@@ -34,14 +34,15 @@ const categoryFilter = async filters => {
 
 const prepareSnippet = async queries => {
     const selectors = SNIPPET_FILTERS.reduce((selectors, filter) => {
-        if (filter in queries) selectors[filter] = queries[filter]
+        if (queries[filter]) {
+            selectors[filter] = queries[filter]
+        }
         return selectors
     }, {})
 
     datesFilter(selectors)
     descriptionFilter(selectors)
     await categoryFilter(selectors)
-
     return selectors
 }
 
