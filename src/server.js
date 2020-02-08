@@ -7,7 +7,6 @@ const api = require('./routes')
 require('dotenv').config()
 
 global.ROOT_PATH = __dirname
-
 app.use(cors())
 
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -17,7 +16,7 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*')
     res.header(
         'Access-Control-Allow-Headers',
-        'Origin, X-Requested-With, Content-Type, Accept',
+        'Origin, X-Requested-With, Content-Type, Accept'
     )
     next()
 })
@@ -27,7 +26,8 @@ app.use((req, res, next) => {
     next()
 })
 
-app.use('/api', api)
+app.use('/api', api.snippets)
+app.use('/api', api.categories)
 
 db.then(() => {
     app.listen(process.env.PORT, process.env.SERVER_HOST, err => {
