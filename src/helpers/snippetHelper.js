@@ -7,23 +7,28 @@ const { ERROR_MSG } = require('../constants')
 
 const getPath = filename => path.join(ROOT_PATH, 'data', 'files', filename)
 
+const regexIndexOf = (str, regex, startIndex = 0) => {
+  const s = str.substring(startIndex).search(regex)
+  return s === -1 ? s : s + startIndex
+}
+
 const getCodePreview = str => {
   let codePreviewStr = ''
   let start = 0
   let end = 0
   let linesCount = 0
 
-  end = str.indexOf('\n', start)
+  end = regexIndexOf(str, /[\r\n]/, start)
   if (end === -1 && str.trim()) return str
 
   while (end !== -1 && linesCount < 10) {
-    end = str.indexOf('\n', start)
+    end = regexIndexOf(str, /[\r\n]/, start)
     line = str.slice(start, end)
-    codePreviewStr += `${line}\n`
+    codePreviewStr += `${line}\r\n`
     start = end + 1
-    linesCount++
+    linesCount += 1
   }
-  return codePreviewStr
+  return codePreviewStr.slice(0, -1)
 }
 
 const prepare = async (originalFilename, category, description, code) => {
