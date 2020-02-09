@@ -22,12 +22,12 @@ const initCategories = async () => {
   } else {
     Category.insertMany(
       [
-        { title: 'frontend' },
-        { title: 'backend' },
-        { title: 'machine-learning' },
-        { title: 'dependency-inversion' },
-        { title: 'computer-graphics' },
-        { title: 'algorithms' }
+        { title: 'Frontend' },
+        { title: 'Backend' },
+        { title: 'Machine Learning' },
+        { title: 'Dependency Inversion' },
+        { title: 'Computer Graphics' },
+        { title: 'Algorithms' }
       ],
       (error, cats) => {
         console.log('added categories...')
