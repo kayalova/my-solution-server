@@ -72,7 +72,7 @@ const remove = async _id => {
 const find = async filterSnippet => {
   try {
     const snippets = await Snippet.find(filterSnippet)
-      .select('-pathToFile -filename -__v')
+      .select('-filename -__v')
       .populate('category', '-_id -__v')
     return snippets
   } catch (err) {

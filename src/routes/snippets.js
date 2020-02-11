@@ -1,7 +1,8 @@
 const router = require('express').Router()
 const snippetHelper = require('../helpers/snippetHelper')
-const filterHelper = require('../helpers/filterHelper')
 const errorHelper = require('../helpers/errorHelper')
+const filterHelper = require('../helpers/filterHelper')
+const fileHelper = require('../helpers/fileHelper')
 const { RESPONSE } = require('../constants')
 
 router.get('/snippets', async (req, res) => {
@@ -9,6 +10,16 @@ router.get('/snippets', async (req, res) => {
     snippetHelper
         .find(filter)
         .then(snippets => res.send(snippets))
+        .catch(err =>
+            res.status(500).json(errorHelper.getErrorResponse(err.message))
+        )
+})
+
+router.get('/snippets/:id', async (req, res) => {
+    const [snippet] = await snippetHelper.find({ _id: req.params.id })
+    fileHelper
+        .getContent(snippet.pathToFile)
+        .then(code => res.send({ code, snippet }))
         .catch(err =>
             res.status(500).json(errorHelper.getErrorResponse(err.message))
         )
