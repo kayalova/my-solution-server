@@ -23,6 +23,9 @@ npm run start
 search snippets
 GET /api/snippets
 
+get one snippet
+GET /api/snippets/:id
+
 create snippet
 POST /api/snippets/create
 
