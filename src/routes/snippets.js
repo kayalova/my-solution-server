@@ -19,7 +19,9 @@ router.get('/snippets/:id', async (req, res) => {
     const [snippet] = await snippetHelper.find({ _id: req.params.id })
     fileHelper
         .getContent(snippet.pathToFile)
-        .then(code => res.send({ code, snippet }))
+        .then(code => {
+            res.send([{ code, ...snippet._doc }])
+        })
         .catch(err =>
             res.status(500).json(errorHelper.getErrorResponse(err.message))
         )

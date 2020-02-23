@@ -73,6 +73,7 @@ const find = async filterSnippet => {
   try {
     const snippets = await Snippet.find(filterSnippet)
       .select('-filename -__v')
+      .sort({ createdAt: 'desc' })
       .populate('category', '-_id -__v')
     return snippets
   } catch (err) {
